@@ -1,17 +1,25 @@
 local stub = require("luassert.stub")
 local rearrange = require("rearrange")
 local helper = require("tests.rearrange.helper")
+local keyboard_mock = require("tests.rearrange.helper.keyboard_mock")
+
+function mock_keyboard_input(keys)
+  stub(vim.fn, "getcharstr")
+  local count = 0
+
+  ---@diagnostic disable-next-line
+  vim.fn.getcharstr.invokes(function()
+    count = count + 1
+    return keys[count]
+  end)
+
+  return function()
+    ---@diagnostic disable-next-line
+    vim.fn.getcharstr:revert()
+  end
+end
 
 describe("supports rearranging a single line", function()
-  before_each(function()
-    stub(vim.fn, "getcharstr")
-  end)
-
-  after_each(function()
-    ---@diagnostic disable-next-line: undefined-field
-    vim.fn.getcharstr:revert()
-  end)
-
   describe("given the line is in the middle of the file", function()
     it("moves down one line with j", function()
       rearrange.setup()
@@ -24,10 +32,9 @@ describe("supports rearranging a single line", function()
         ]],
         filetype = "lua",
         action = function()
-          ---@diagnostic disable-next-line
-          vim.fn.getcharstr.returns("j")
-          rearrange.rearrange()
-          helper.wait(100)
+          keyboard_mock.run({ "j", "" }, function()
+            rearrange.rearrange()
+          end)
         end,
         expected = [[
           local one = "1"
@@ -48,10 +55,9 @@ describe("supports rearranging a single line", function()
         ]],
         filetype = "lua",
         action = function()
-          ---@diagnostic disable-next-line
-          vim.fn.getcharstr.returns("k")
-          rearrange.rearrange()
-          helper.wait(100)
+          keyboard_mock.run({ "k", "" }, function()
+            rearrange.rearrange()
+          end)
         end,
         expected = [[
           local two = "2"
@@ -73,10 +79,9 @@ describe("supports rearranging a single line", function()
         ]],
         filetype = "lua",
         action = function()
-          ---@diagnostic disable-next-line
-          vim.fn.getcharstr.returns("j")
-          rearrange.rearrange()
-          helper.wait(100)
+          keyboard_mock.run({ "j", "" }, function()
+            rearrange.rearrange()
+          end)
         end,
         expected = [[
           local two = "2"
@@ -95,10 +100,9 @@ describe("supports rearranging a single line", function()
         ]],
         filetype = "lua",
         action = function()
-          ---@diagnostic disable-next-line
-          vim.fn.getcharstr.returns("k")
-          rearrange.rearrange()
-          helper.wait(100)
+          keyboard_mock.run({ "k", "" }, function()
+            rearrange.rearrange()
+          end)
         end,
         expected = [[
           local one = "1"
@@ -119,10 +123,9 @@ describe("supports rearranging a single line", function()
         ]],
         filetype = "lua",
         action = function()
-          ---@diagnostic disable-next-line
-          vim.fn.getcharstr.returns("j")
-          rearrange.rearrange()
-          helper.wait(100)
+          keyboard_mock.run({ "j", "" }, function()
+            rearrange.rearrange()
+          end)
         end,
         expected = [[
           local one = "1"
@@ -141,10 +144,9 @@ describe("supports rearranging a single line", function()
         ]],
         filetype = "lua",
         action = function()
-          ---@diagnostic disable-next-line
-          vim.fn.getcharstr.returns("k")
-          rearrange.rearrange()
-          helper.wait(100)
+          keyboard_mock.run({ "k", "" }, function()
+            rearrange.rearrange()
+          end)
         end,
         expected = [[
           local two = "2"
@@ -156,15 +158,6 @@ describe("supports rearranging a single line", function()
 end)
 
 describe("supports rearranging a block of lines", function()
-  before_each(function()
-    stub(vim.fn, "getcharstr")
-  end)
-
-  after_each(function()
-    ---@diagnostic disable-next-line: undefined-field
-    vim.fn.getcharstr:revert()
-  end)
-
   describe("given the block is in the middle of the file", function()
     it("moves down one line with j", function()
       rearrange.setup()
@@ -178,11 +171,10 @@ describe("supports rearranging a block of lines", function()
         ]],
         filetype = "lua",
         action = function()
-          vim.cmd("normal! vj")
-          ---@diagnostic disable-next-line
-          vim.fn.getcharstr.returns("j")
-          rearrange.rearrange()
-          helper.wait(100)
+          keyboard_mock.run({ "j", "" }, function()
+            vim.cmd("normal! vj")
+            rearrange.rearrange()
+          end)
         end,
         expected = [[
           local one = "1"
@@ -205,11 +197,10 @@ describe("supports rearranging a block of lines", function()
         ]],
         filetype = "lua",
         action = function()
-          vim.cmd("normal! vj")
-          ---@diagnostic disable-next-line
-          vim.fn.getcharstr.returns("k")
-          rearrange.rearrange()
-          helper.wait(100)
+          keyboard_mock.run({ "k", "" }, function()
+            vim.cmd("normal! vj")
+            rearrange.rearrange()
+          end)
         end,
         expected = [[
           local two = "2"
@@ -233,11 +224,10 @@ describe("supports rearranging a block of lines", function()
         ]],
         filetype = "lua",
         action = function()
-          vim.cmd("normal! vj")
-          ---@diagnostic disable-next-line
-          vim.fn.getcharstr.returns("j")
-          rearrange.rearrange()
-          helper.wait(100)
+          keyboard_mock.run({ "j", "" }, function()
+            vim.cmd("normal! vj")
+            rearrange.rearrange()
+          end)
         end,
         expected = [[
           local three = "3"
@@ -258,11 +248,10 @@ describe("supports rearranging a block of lines", function()
         ]],
         filetype = "lua",
         action = function()
-          vim.cmd("normal! vj")
-          ---@diagnostic disable-next-line
-          vim.fn.getcharstr.returns("k")
-          rearrange.rearrange()
-          helper.wait(100)
+          keyboard_mock.run({ "k", "" }, function()
+            vim.cmd("normal! vj")
+            rearrange.rearrange()
+          end)
         end,
         expected = [[
           local one = "1"
@@ -285,11 +274,10 @@ describe("supports rearranging a block of lines", function()
         ]],
         filetype = "lua",
         action = function()
-          vim.cmd("normal! vj")
-          ---@diagnostic disable-next-line
-          vim.fn.getcharstr.returns("j")
-          rearrange.rearrange()
-          helper.wait(100)
+          keyboard_mock.run({ "j", "" }, function()
+            vim.cmd("normal! vj")
+            rearrange.rearrange()
+          end)
         end,
         expected = [[
           local one = "1"
@@ -310,11 +298,10 @@ describe("supports rearranging a block of lines", function()
         ]],
         filetype = "lua",
         action = function()
-          vim.cmd("normal! vj")
-          ---@diagnostic disable-next-line
-          vim.fn.getcharstr.returns("k")
-          rearrange.rearrange()
-          helper.wait(100)
+          keyboard_mock.run({ "k", "" }, function()
+            vim.cmd("normal! vj")
+            rearrange.rearrange()
+          end)
         end,
         expected = [[
           local two = "2"
@@ -327,15 +314,6 @@ describe("supports rearranging a block of lines", function()
 end)
 
 describe("supports rearranging a block of Treesitter nodes", function()
-  before_each(function()
-    stub(vim.fn, "getcharstr")
-  end)
-
-  after_each(function()
-    ---@diagnostic disable-next-line: undefined-field
-    vim.fn.getcharstr:revert()
-  end)
-
   it("swaps with the next node with j", function()
     rearrange.setup()
 
@@ -347,12 +325,9 @@ describe("supports rearranging a block of Treesitter nodes", function()
       filetype = "lua",
       action = function()
         vim.treesitter.get_parser():parse()
-
-        ---@diagnostic disable-next-line
-        vim.fn.getcharstr.returns("j")
-
-        rearrange.rearrange()
-        helper.wait(150)
+        keyboard_mock.run({ "j", "j", "" }, function()
+          rearrange.rearrange()
+        end)
       end,
       expected = [[
         local one = "1"
@@ -372,12 +347,9 @@ describe("supports rearranging a block of Treesitter nodes", function()
       filetype = "lua",
       action = function()
         vim.treesitter.get_parser():parse()
-
-        ---@diagnostic disable-next-line
-        vim.fn.getcharstr.returns("k")
-
-        rearrange.rearrange()
-        helper.wait(150)
+        keyboard_mock.run({ "k", "k", "" }, function()
+          rearrange.rearrange()
+        end)
       end,
       expected = [[
         local one = "1"
@@ -388,15 +360,6 @@ describe("supports rearranging a block of Treesitter nodes", function()
 end)
 
 describe("supports expanding the range", function()
-  before_each(function()
-    stub(vim.fn, "getcharstr")
-  end)
-
-  after_each(function()
-    ---@diagnostic disable-next-line: undefined-field
-    vim.fn.getcharstr:revert()
-  end)
-
   it("expands the range with l", function()
     rearrange.setup()
 
@@ -408,19 +371,9 @@ describe("supports expanding the range", function()
       filetype = "lua",
       action = function()
         vim.treesitter.get_parser():parse()
-
-        local count = 0
-        local keys = { "l", "k" }
-
-        -- Expand with l
-        ---@diagnostic disable-next-line
-        vim.fn.getcharstr.invokes(function()
-          count = count + 1
-          return keys[count]
+        keyboard_mock.run({ "l", "k", "" }, function()
+          rearrange.rearrange()
         end)
-
-        rearrange.rearrange()
-        helper.wait(150)
       end,
       expected = [[
         local two = {"2.1", "2.2", "2.3"}
@@ -440,19 +393,9 @@ describe("supports expanding the range", function()
       filetype = "lua",
       action = function()
         vim.treesitter.get_parser():parse()
-
-        local count = 0
-        local keys = { "l", "h", "j" }
-
-        -- Expand with l
-        ---@diagnostic disable-next-line
-        vim.fn.getcharstr.invokes(function()
-          count = count + 1
-          return keys[count]
+        keyboard_mock.run({ "l", "h", "j", "" }, function()
+          rearrange.rearrange()
         end)
-
-        rearrange.rearrange()
-        helper.wait(200)
       end,
       expected = [[
         local one = "1"
@@ -475,19 +418,9 @@ describe("supports expanding the range", function()
       filetype = "lua",
       action = function()
         vim.treesitter.get_parser():parse()
-
-        local count = 0
-        local keys = { "l", "j" }
-
-        -- Expand with l
-        ---@diagnostic disable-next-line
-        vim.fn.getcharstr.invokes(function()
-          count = count + 1
-          return keys[count]
+        keyboard_mock.run({ "l", "j", "" }, function()
+          rearrange.rearrange()
         end)
-
-        rearrange.rearrange()
-        helper.wait(150)
       end,
       expected = [[
         foo("bar", {
@@ -513,19 +446,9 @@ describe("supports expanding the range", function()
       filetype = "lua",
       action = function()
         vim.treesitter.get_parser():parse()
-
-        local count = 0
-        local keys = { "l", "l", "k" }
-
-        -- Expand with l
-        ---@diagnostic disable-next-line
-        vim.fn.getcharstr.invokes(function()
-          count = count + 1
-          return keys[count]
+        keyboard_mock.run({ "l", "l", "k", "" }, function()
+          rearrange.rearrange()
         end)
-
-        rearrange.rearrange()
-        helper.wait(200)
       end,
       expected = [[
         foo({
