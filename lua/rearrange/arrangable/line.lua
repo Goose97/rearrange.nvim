@@ -1,4 +1,3 @@
-local utils = require("custom.utils")
 local M = {}
 
 ---@class Rearrange.Arrangable.Line
@@ -8,6 +7,11 @@ local Line = {}
 
 function Line:range()
   return { self.start, 0, self["end"], 0 }
+end
+
+---@return string hl_group
+function Line:range_hl()
+  return "Rearrange.CurrentLine"
 end
 
 ---@return Rearrange.Arrangable.Line? new_arrangable

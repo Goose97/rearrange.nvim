@@ -1,3 +1,4 @@
+local _utils = require("custom.utils")
 local utils = require("custom.utils")
 local Line = require("rearrange.arrangable.line")
 local finder = require("rearrange.finder")
@@ -42,7 +43,7 @@ end
 function M._highlight_range(arrangable)
   local range = arrangable:range()
   vim.api.nvim_buf_set_extmark(0, M.current_arrangable_highlight_ns, range[1], range[2], {
-    hl_group = "Rearrange.Current",
+    hl_group = arrangable:range_hl(),
     end_row = range[3],
     end_col = range[4],
     virt_text = { { string.rep(" ", 4) .. "Swap next: j | Swap prev: k | Expand: l | Shrink: h", "Comment" } },
@@ -160,7 +161,11 @@ function M.setup()
   M.moveable_range_highlight_ns = vim.api.nvim_create_namespace("rearrange.moveable_range")
   M.backdrop_highlight_ns = vim.api.nvim_create_namespace("rearrange.backdrop")
   M.arrange_events_ns = vim.api.nvim_create_namespace("rearrange.arrange_events")
-  vim.api.nvim_set_hl(0, "Rearrange.Current", { link = "Visual" })
+
+  local hl_info = vim.api.nvim_get_hl(0, { name = "CursorLineNr" })
+  vim.api.nvim_set_hl(0, "Rearrange.CurrentLine", { undercurl = true, sp = hl_info.fg })
+
+  vim.api.nvim_set_hl(0, "Rearrange.CurrentTreesitterNode", { link = "Visual" })
   vim.api.nvim_set_hl(0, "Rearrange.Backdrop", { link = "Comment" })
 
   vim.keymap.set({ "n", "v" }, "gm", M.rearrange)

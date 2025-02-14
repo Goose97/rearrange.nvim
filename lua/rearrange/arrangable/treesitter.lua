@@ -12,6 +12,11 @@ function Treesitter:range()
   return { srow, scol, erow, ecol }
 end
 
+---@return string hl_group
+function Treesitter:range_hl()
+  return "Rearrange.CurrentTreesitterNode"
+end
+
 local function closest_ancestor(node, ancestor_type)
   while node do
     if node:type() == ancestor_type then
