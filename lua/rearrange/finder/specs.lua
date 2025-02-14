@@ -32,4 +32,16 @@ return {
   javascript = js_like,
   typescript = js_like,
   javascriptreact = js_like,
+  elixir = {
+    function(node)
+      local parent = node:parent()
+      return parent and (vim.list_contains({ "body", "do_block", "arguments" }, parent:type()))
+    end,
+    function(node)
+      local parent = node:parent()
+      return parent
+        and (vim.list_contains({ "do_block", "anonymous_function" }, parent:type()))
+        and (vim.list_contains({ "stab_clause" }, node:type()))
+    end,
+  },
 }
