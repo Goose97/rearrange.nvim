@@ -357,6 +357,30 @@ describe("supports rearranging a block of Treesitter nodes", function()
       ]],
     })
   end)
+
+  describe("given the Treesitter node has no siblings", function()
+    it("skips the node", function()
+      rearrange.setup()
+
+      helper.assert_scenario({
+        input = [[
+          local one = "1"
+          local two = {"2.|1"}
+        ]],
+        filetype = "lua",
+        action = function()
+          vim.treesitter.get_parser():parse()
+          keyboard_mock.run({ "k", "" }, function()
+            rearrange.rearrange()
+          end)
+        end,
+        expected = [[
+        local two = {"2.1"}
+        local one = "1"
+      ]],
+      })
+    end)
+  end)
 end)
 
 describe("supports expanding the range", function()

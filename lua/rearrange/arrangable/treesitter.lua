@@ -1,3 +1,4 @@
+local _utils = require("custom.utils")
 local ts_utils = require("nvim-treesitter.ts_utils")
 
 local M = {}
@@ -15,6 +16,13 @@ end
 ---@return string hl_group
 function Treesitter:range_hl()
   return "Rearrange.CurrentTreesitterNode"
+end
+
+---@return boolean has_siblings
+function Treesitter:has_siblings()
+  local next_node = self.node:next_named_sibling()
+  local prev_node = self.node:prev_named_sibling()
+  return next_node ~= nil or prev_node ~= nil
 end
 
 local function closest_ancestor(node, ancestor_type)

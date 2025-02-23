@@ -1,4 +1,3 @@
-local utils = require("custom.utils")
 local Line = require("rearrange.arrangable.line")
 local Treesitter = require("rearrange.arrangable.treesitter")
 
@@ -118,10 +117,14 @@ function M._find_arrangable(start_node, skip_line)
     local spec = lang and require("rearrange.finder.specs")[lang] or {}
     if check_with_spec(current_node, spec) then
       local parent = current_node:parent()
-      return Treesitter.new(current_node),
-        parent and function()
+      local treesitter_finder = Treesitter.new(current_node)
+
+      if treesitter_finder:has_siblings() then
+        local next_callback = parent and function()
           return M._find_arrangable(parent, skip_line)
         end
+        return treesitter_finder, next_callback
+      end
     end
 
     current_node = current_node:parent()
