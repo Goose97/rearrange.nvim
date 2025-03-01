@@ -35,7 +35,7 @@ return {
   elixir = {
     function(node)
       local parent = node:parent()
-      return parent and (vim.list_contains({ "body", "do_block", "arguments" }, parent:type()))
+      return parent and (vim.list_contains({ "body", "do_block", "arguments", "list", "tuple" }, parent:type()))
     end,
     function(node)
       local parent = node:parent()
